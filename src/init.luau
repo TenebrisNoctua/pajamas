@@ -3,7 +3,7 @@
 
 	The entry point for the pajamas library.
 	
-	To use Pajamas, you must first register a provider created for Penumbra.
+	To use Pajamas, you must first register a provider created for Pajamas.
 	Then, to use that provider, you must create a runtime object for it.
 ]]
 
