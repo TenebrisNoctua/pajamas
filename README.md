@@ -6,14 +6,6 @@ The primary example of this being applied in practice is the 'penumbra' Luau gra
 
 Link: https://github.com/Crazyblox/Penumbra
 
-# Runtime Providers
-
-Pajamas allows you to run Luau projects in a platform-agnostic manner, which is done through runtime providers.
-
-Runtime providers are the middleman between the runtime and your project, they initialize and setup the libraries and prepare the runtime for your project. Your project doesn't need to depend on the runtime dependant APIs or functions, it can just depend on Pajamas and its libraries. 
-
-This way, your Luau project can be ported to different platforms with ease, and you only need to initialize the provider for a runtime you wish to port your project to.
-
 -----
 
 # Setting up a Pajamas Project
@@ -63,7 +55,17 @@ It is heavily recommended that you place your project folder as a child under th
 
 # Running a pajamas project:
 
-After setting up your project, to run it, you must first create a runtime object with a runtime provider. To do this, Pajamas comes with a common API that is used the same across all possible platforms.
+## Runtime Providers
+
+Like it has been mentioned above, Pajamas allows you to run your Luau projects in a platform-agnostic manner, which is done through runtime providers.
+
+A runtime provider is the middleman between the runtime and your project. It setups your project, and initializes the libraries that you included within your project. It handles everything related to the runtime for your project, so you don't need to interact with the runtime directly yourself.
+
+This way, your Luau project can be ported to different platforms with ease, and you only need to initialize the provider for a runtime you wish to port your project to.
+
+## Runtime Objects
+
+After setting up your project, to run it, you must first create a runtime object with a runtime provider. A runtime object is used to initialize and run projects per runtime. In the examples below, you can see how this is done.
 
 ## Setting up a project on Roblox
 
@@ -87,13 +89,13 @@ local Runtime = Pajamas.runtime("Test")
 Runtime:init("path/to/project/folder", "Test!")
 ```
 
-Using the `Pajamas.registerRuntimeProvider(runtimeName: string, provider: (...any) -> ())` API, you first register a provider to Pajamas. This stores the provider internally, and makes it ready to be used in runtime objects.
+Using the `Pajamas.registerRuntimeProvider(runtimeName: string, provider: (...any) -> ())` API, you first register a runtime provider to Pajamas. This stores the provider internally, and makes it ready to be used in runtime objects.
 
 To create a runtime object, you use the `Pajamas.runtime(runtimeName: string)` API. This returns a runtime object from the provider that you have registered on the same name. Runtime objects are cached, meaning, if you use this function with the same runtime name multiple times, it will just return the already existing runtime object.
 
 After creating a runtime object, you must then initialize a project on this runtime. Using the `Runtime:init(projectLocation: any, ...)` method, you initialize and run a project on this runtime. The first parameter of this function tells the provider where your project is. This can change depending on the platform you wish to use Pajamas on. Any parameters after the location will be directly given to your project.
 
-A project must be sat directly as a child of `pajamas/`, maintaining a siblance with the `/plugin` directory in order to be able to function as intended and interface appropriately within the host's environment.
+It is also possible to initialize multiple projects on the same runtime with runtime objects.
 
 -----
 
