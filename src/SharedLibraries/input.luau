@@ -9,9 +9,11 @@
 ]]
 
 local Input = {
-	InputBegan = {} :: Signal<InputObject>,
-	InputEnded = {} :: Signal<InputObject>,
-	InputChanged = {} :: Signal<InputObject>,
+	Provided = {
+		InputBegan = {} :: Signal<InputObject>,
+		InputEnded = {} :: Signal<InputObject>,
+		InputChanged = {} :: Signal<InputObject>,
+	},
 	Connections = {} :: {Connection}
 }
 
@@ -38,16 +40,16 @@ export type InputObject = {
 -- Input Library Functions
 
 function Input.registerSignals(inputBegan: (Signal<InputObject> | any), inputEnded: (Signal<InputObject> | any), inputChanged: (Signal<InputObject> | any)?)
-	Input.InputBegan = inputBegan
-	Input.InputEnded = inputEnded
+	Input.Provided.InputBegan = inputBegan
+	Input.Provided.InputEnded = inputEnded
 	
 	if not inputChanged then return end
-	Input.InputChanged = inputChanged
+	Input.Provided.InputChanged = inputChanged
 end
 
 function Input.InputBegan(targetKeyCode: string | any, callback: (InputObject, ...any) -> ())
-	assert(Input.InputBegan.Connect, "Input signals have not been registered yet!")
-	table.insert(Input.Connections, Input.InputBegan:Connect(function(input: InputObject, ...) 
+	assert(Input.Provided.InputBegan.Connect, "Input signals have not been registered yet!")
+	table.insert(Input.Connections, Input.Provided.InputBegan:Connect(function(input: InputObject, ...) 
 		if targetKeyCode == input.KeyCode or (string.split(tostring(input.KeyCode), `.`)[3] or ``) == targetKeyCode then
 			callback(input, ...)
 		end
@@ -55,8 +57,8 @@ function Input.InputBegan(targetKeyCode: string | any, callback: (InputObject, .
 end
 
 function Input.InputEnded(targetKeyCode: string | any, callback: (InputObject, ...any) -> ())
-	assert(Input.InputEnded.Connect, "Input signals have not been registered yet!")
-	table.insert(Input.Connections, Input.InputEnded:Connect(function(input: InputObject, ...) 
+	assert(Input.Provided.InputEnded.Connect, "Input signals have not been registered yet!")
+	table.insert(Input.Connections, Input.Provided.InputEnded:Connect(function(input: InputObject, ...) 
 		if targetKeyCode == input.KeyCode or (string.split(tostring(input.KeyCode), `.`)[3] or ``) == targetKeyCode then
 			callback(input, ...)
 		end
@@ -64,8 +66,8 @@ function Input.InputEnded(targetKeyCode: string | any, callback: (InputObject, .
 end
 
 function Input.InputChanged(targetKeyCode: string | any, callback: (InputObject, ...any) -> ())
-	assert(Input.InputChanged.Connect, "InputChanged signal has not been registered yet!")
-	table.insert(Input.Connections, Input.InputChanged:Connect(function(input: InputObject, ...) 
+	assert(Input.Provided.InputChanged.Connect, "InputChanged signal has not been registered yet!")
+	table.insert(Input.Connections, Input.Provided.InputChanged:Connect(function(input: InputObject, ...) 
 		if targetKeyCode == input.KeyCode or (string.split(tostring(input.KeyCode), `.`)[3] or ``) == targetKeyCode then
 			callback(input, ...)
 		end
