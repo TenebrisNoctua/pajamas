@@ -6,30 +6,78 @@
 	
 	A simple keyboard input module providing an agnostic interface
 	for a pajamas project to react to keyboard user intent.
-	
-	Note:
-	No method for disconnection keyboard input yet.
-	It is currently assumed that a pajamas project runs for as
-	long as the host runtime is also running.
 ]]
 
-local Input = {}
-local UIS = game:GetService("UserInputService")
+local Input = {
+	InputBegan = {} :: Signal<InputObject>,
+	InputEnded = {} :: Signal<InputObject>,
+	InputChanged = {} :: Signal<InputObject>,
+	Connections = {} :: {Connection}
+}
 
-function Input:KeyDown( Listen_KeyCode: string, func )
-	UIS.InputBegan:Connect(function( input: InputObject )
-		if ( string.split( tostring( input.KeyCode ), `.` )[3] or `` ) == Listen_KeyCode then
-			func()
-		end
-	end)
+-- Types
+
+export type Connection = {
+	Disconnect: (self: Connection) -> (),
+	Destroy: (self: Connection) -> (),
+	Connected: boolean,
+}
+
+export type Signal<T...> = {
+	Fire: (self: Signal<T...>, T...) -> (),
+	Connect: (self: Signal<T...>, fn: (T...) -> ()) -> Connection,
+	Destroy: (self: Signal<T...>) -> (),
+	Wait: (self: Signal<T...>) -> T...,
+}
+
+export type InputObject = {
+	KeyCode: string,
+	[string]: any
+}
+
+-- Input Library Functions
+
+function Input.registerSignals(inputBegan: (Signal<InputObject> | any), inputEnded: (Signal<InputObject> | any), inputChanged: (Signal<InputObject> | any)?)
+	Input.InputBegan = inputBegan
+	Input.InputEnded = inputEnded
+	
+	if not inputChanged then return end
+	Input.InputChanged = inputChanged
 end
 
-function Input:KeyUp( Listen_KeyCode: string, func )
-	UIS.InputEnded:Connect(function( input: InputObject )
-		if ( string.split( tostring( input.KeyCode ), `.` )[3] or `` ) == Listen_KeyCode then
-			func()
+function Input.InputBegan(targetKeyCode: string | any, callback: (InputObject, ...any) -> ())
+	assert(Input.InputBegan.Connect, "Input signals have not been registered yet!")
+	table.insert(Input.Connections, Input.InputBegan:Connect(function(input: InputObject, ...) 
+		if targetKeyCode == input.KeyCode or (string.split(tostring(input.KeyCode), `.`)[3] or ``) == targetKeyCode then
+			callback(input, ...)
 		end
-	end)
+	end))
+end
+
+function Input.InputEnded(targetKeyCode: string | any, callback: (InputObject, ...any) -> ())
+	assert(Input.InputEnded.Connect, "Input signals have not been registered yet!")
+	table.insert(Input.Connections, Input.InputEnded:Connect(function(input: InputObject, ...) 
+		if targetKeyCode == input.KeyCode or (string.split(tostring(input.KeyCode), `.`)[3] or ``) == targetKeyCode then
+			callback(input, ...)
+		end
+	end))
+end
+
+function Input.InputChanged(targetKeyCode: string | any, callback: (InputObject, ...any) -> ())
+	assert(Input.InputChanged.Connect, "InputChanged signal has not been registered yet!")
+	table.insert(Input.Connections, Input.InputChanged:Connect(function(input: InputObject, ...) 
+		if targetKeyCode == input.KeyCode or (string.split(tostring(input.KeyCode), `.`)[3] or ``) == targetKeyCode then
+			callback(input, ...)
+		end
+	end))
+end
+
+function Input.ClearConnections()
+	for _, connection in Input.Connections do
+		connection:Disconnect()
+		connection:Destroy()
+	end
+	table.clear(Input.Connections)
 end
 
 return Input

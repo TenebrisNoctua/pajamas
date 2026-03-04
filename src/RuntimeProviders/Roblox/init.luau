@@ -4,13 +4,7 @@
 --[[
 	Pajamas Runtime: Roblox
 	
-	This module is responsible for handling the Pajamas runtime.
-	
-	This system holds projects made for pajamas, host wrapper
-	scripts for either a server or client runcontext, and plugin
-	modules which act as the interface for any given project,
-	enabling the ability to port Luau projects made with Pajamas
-	to other runtimes where plugin support is also provided.
+	This module is responsible for handling the Pajamas runtime on Roblox.
 ]]
 
 -- Init assertions
@@ -60,7 +54,7 @@ local function StartProject(Project: Folder, pajamasrc: PajamasSrc, LaunchParams
 	-- Wait until Wrapper initializes the binding.
 	RunService.Heartbeat:Wait()
 	
-	Process:SendMessage("InitializeWrapper", Project, LaunchParams)
+	Process:SendMessage("InitializeWrapper", pajamasrc, LaunchParams)
 
 	-- Success!
 	return true

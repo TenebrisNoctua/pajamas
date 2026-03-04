@@ -15,9 +15,10 @@ export type PajamasSrc = {
 		default: { run: boolean },
 		roblox: { run_server: boolean, run_client: boolean }
 	},
-	plugin: {
+	libraries: {
 		[string]: { include: boolean }
-	}
+	},
+	main: any
 }
 
 export type PajamasRuntime = {

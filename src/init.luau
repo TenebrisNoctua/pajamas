@@ -7,6 +7,11 @@
 	Then, to use that provider, you must create a runtime object for it.
 ]]
 
+-- Shared Libraries
+
+local Task = require("@self/SharedLibraries/Task")
+local Input = require("@self/SharedLibraries/Input")
+
 -- Variables
 
 local Types = require("@self/Types")
@@ -14,6 +19,11 @@ local Types = require("@self/Types")
 local Providers = {}
 local Runtimes = {}
 local Pajamas = {}
+
+local Libraries = {
+	Task = Task,
+	Input = Input
+}
 
 -- Types
 
@@ -75,6 +85,13 @@ function Pajamas.registerRuntimeProvider<T>(providerName: T | RuntimeProvider, p
 	assert(typeof(provider) == "function", "Pajamas - registerRuntimeProvider: Second argument must be a function.")
 	
 	Providers[providerName] = provider
+end
+
+--[[
+	Retrieves a shared library. When called under a project, the library should already be initialized by the runtime provider.
+]]
+function Pajamas.getLibrary<T>(libraryName: T | keyof<typeof(Libraries)>): index<typeof(Libraries), T>
+	return Libraries[libraryName]
 end
 
 return Pajamas
