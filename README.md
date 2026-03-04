@@ -21,6 +21,7 @@ This way, your Luau project can be ported to different platforms with ease, and 
 Setting up a pajamas project may differ platform to platform, but the main project layout should be the same:
 
 **ProjectFolder**:
+
 	 ┣━ .pajamasrc.luau
 	 ┗━ init.luau
 
